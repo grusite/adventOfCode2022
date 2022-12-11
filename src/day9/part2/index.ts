@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 const lines = fs
-  .readFileSync('/Users/jorgemartin/repo/adventOfCode22/src/day9/puzzle.txt', 'utf8')
+  .readFileSync('/Users/jorgemartin/repo/adventOfCode22/src/day9/part1/test.txt', 'utf8')
   .split('\n')
 
 const directions = lines.map((dirs) => dirs.split(' '))
@@ -14,7 +14,7 @@ enum Directions {
 }
 type Cords = [x: number, y: number]
 type RopeCoords = [
-  T: Cords,
+  H: Cords,
   P2: Cords,
   P3: Cords,
   P4: Cords,
@@ -23,7 +23,7 @@ type RopeCoords = [
   P7: Cords,
   P8: Cords,
   P9: Cords,
-  H: Cords
+  T: Cords
 ]
 
 const rope: RopeCoords[] = [
@@ -42,33 +42,119 @@ const rope: RopeCoords[] = [
 ]
 let tailMoves: Cords[] = [[0, 0]]
 
-function moveNextIfLongEnough(prev: Cords, head: Cords, prevHead: Cords) {
-  const x = Math.abs(head[0] - prev[0])
-  const y = Math.abs(head[1] - prev[1])
-
-  if (x > 1 || y > 1) {
-    if (!tailMoves.find((tail) => tail[0] === prevHead[0] && tail[1] === prevHead[1]))
-      tailMoves.push(prevHead)
-    return prevHead
+function moveTailIfLongEnough(tail: Cords, head: Cords, knot: number) {
+  if (head[0] === tail[0] && head[1] - tail[1] > 1) {
+    const futureTail: Cords = [tail[0], tail[1] + 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
   }
-  return prev
+  if (head[0] === tail[0] && head[1] - tail[1] < -1) {
+    const futureTail: Cords = [tail[0], tail[1] - 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (head[0] - tail[0] > 1 && head[1] === tail[1]) {
+    const futureTail: Cords = [tail[0] + 1, tail[1]]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (head[0] - tail[0] < -1 && head[1] === tail[1]) {
+    const futureTail: Cords = [tail[0] - 1, tail[1]]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] > 1 && head[1] - tail[1] === 1) ||
+    (head[0] - tail[0] === 1 && head[1] - tail[1] > 1)
+  ) {
+    const futureTail: Cords = [tail[0] + 1, tail[1] + 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] > 1 && head[1] - tail[1] === -1) ||
+    (head[0] - tail[0] === 1 && head[1] - tail[1] < -1)
+  ) {
+    const futureTail: Cords = [tail[0] + 1, tail[1] - 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] < -1 && head[1] - tail[1] === 1) ||
+    (head[0] - tail[0] === -1 && head[1] - tail[1] > 1)
+  ) {
+    const futureTail: Cords = [tail[0] - 1, tail[1] + 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] < -1 && head[1] - tail[1] === -1) ||
+    (head[0] - tail[0] === -1 && head[1] - tail[1] < -1)
+  ) {
+    const futureTail: Cords = [tail[0] - 1, tail[1] - 1]
+    if (
+      knot === 9 &&
+      !tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1])
+    )
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  return tail
 }
 
-function moveHead(prev: Cords, head: Cords, qnt: number, direction: Directions) {
-  let futPrev = [...prev] as Cords
+const calcs: Record<Directions, Cords> = {
+  U: [0, 1],
+  D: [0, -1],
+  L: [-1, 0],
+  R: [1, 0],
+}
+
+function moveHead(ropeLastCoord: RopeCoords, qnt: number, direction: Directions) {
   for (let i = 0; i < qnt; i++) {
-    const prevHead = [...head] as Cords
-    if (direction === Directions.Up) head = [head[0], head[1] + 1]
-    if (direction === Directions.Down) head = [head[0], head[1] - 1]
-    if (direction === Directions.Left) head = [head[0] - 1, head[1]]
-    if (direction === Directions.Right) head = [head[0] + 1, head[1]]
-    futPrev = moveNextIfLongEnough(prev, head, prevHead)
-    rope.push([futPrev, head])
+    ropeLastCoord[0] = [
+      ropeLastCoord[0][0] + calcs[direction][0],
+      ropeLastCoord[0][1] + calcs[direction][1],
+    ]
+    let tmp = [ropeLastCoord[0]]
+    for (let i = 1; i < 9; i++) {
+      ropeLastCoord[i] = moveTailIfLongEnough(ropeLastCoord[i + 1], ropeLastCoord[i], i)
+      tmp.push(ropeLastCoord[i])
+    }
+    rope.push(tmp as RopeCoords)
+    tmp = []
   }
 }
 
-directions.forEach((dirs) => {
-  moveHead(rope.at(-1)![0], rope.at(-1)![1], +dirs[1], dirs[0] as Directions)
+directions.forEach((dirs, i) => {
+  moveHead(rope.at(-1)!, +dirs[1], dirs[0] as Directions)
 })
 
 console.log(directions)

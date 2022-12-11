@@ -27,10 +27,70 @@ function moveTailIfLongEnough(tail: Cords, head: Cords, prevHead: Cords) {
   const x = Math.abs(head[0] - tail[0])
   const y = Math.abs(head[1] - tail[1])
 
-  if (x > 1 || y > 1) {
-    if (!tailMoves.find((tail) => tail[0] === prevHead[0] && tail[1] === prevHead[1]))
-      tailMoves.push(prevHead)
-    return prevHead
+  // if (x > 1 || y > 1) {
+  //   if (!tailMoves.find((tail) => tail[0] === prevHead[0] && tail[1] === prevHead[1]))
+  //     tailMoves.push(prevHead)
+  //   return prevHead
+  // }
+  if (head[0] === tail[0] && head[1] - tail[1] > 1) {
+    const futureTail: Cords = [tail[0], tail[1] + 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (head[0] === tail[0] && head[1] - tail[1] < -1) {
+    const futureTail: Cords = [tail[0], tail[1] - 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (head[0] - tail[0] > 1 && head[1] === tail[1]) {
+    const futureTail: Cords = [tail[0] + 1, tail[1]]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (head[0] - tail[0] < -1 && head[1] === tail[1]) {
+    const futureTail: Cords = [tail[0] - 1, tail[1]]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] > 1 && head[1] - tail[1] === 1) ||
+    (head[0] - tail[0] === 1 && head[1] - tail[1] > 1)
+  ) {
+    const futureTail: Cords = [tail[0] + 1, tail[1] + 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] > 1 && head[1] - tail[1] === -1) ||
+    (head[0] - tail[0] === 1 && head[1] - tail[1] < -1)
+  ) {
+    const futureTail: Cords = [tail[0] + 1, tail[1] - 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] < -1 && head[1] - tail[1] === 1) ||
+    (head[0] - tail[0] === -1 && head[1] - tail[1] > 1)
+  ) {
+    const futureTail: Cords = [tail[0] - 1, tail[1] + 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
+  }
+  if (
+    (head[0] - tail[0] < -1 && head[1] - tail[1] === -1) ||
+    (head[0] - tail[0] === -1 && head[1] - tail[1] < -1)
+  ) {
+    const futureTail: Cords = [tail[0] - 1, tail[1] - 1]
+    if (!tailMoves.find((tail) => tail[0] === futureTail[0] && tail[1] === futureTail[1]))
+      tailMoves.push(futureTail)
+    return futureTail
   }
   return tail
 }
@@ -43,12 +103,11 @@ const calcs: Record<Directions, Cords> = {
 }
 
 function moveHead(tail: Cords, head: Cords, qnt: number, direction: Directions) {
-  let futTail = [...tail] as Cords
   for (let i = 0; i < qnt; i++) {
     const prevHead = [...head] as Cords
     head = [head[0] + calcs[direction][0], head[1] + calcs[direction][1]]
-    futTail = moveTailIfLongEnough(tail, head, prevHead)
-    rope.push([futTail, head])
+    tail = moveTailIfLongEnough(tail, head, prevHead)
+    rope.push([tail, head])
   }
 }
 
