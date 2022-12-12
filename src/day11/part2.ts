@@ -79,7 +79,7 @@ function main() {
 
   console.log('pre', monkeys)
 
-  for (let i = 0; i < 10000; i++) {
+  for (let i = 0; i < 20; i++) {
     monkeys.forEach((monkey) => {
       monkey.updateWorryLevel()
       monkey.itemsWorryLevel.map((item, i) => {
@@ -94,6 +94,10 @@ function main() {
   // console.log('pos', monkeys)
 
   // Part 2
+  monkeys.forEach((monkey) => {
+    console.log('== After round 1 ==')
+    console.log(`Monkey ${monkey.id} inspected items ${monkey.totalInspectedItems} times`)
+  })
   monkeys.sort((a, b) => b.totalInspectedItems - a.totalInspectedItems)
   console.log('Total Numer', monkeys[0].totalInspectedItems * monkeys[1].totalInspectedItems)
 }
