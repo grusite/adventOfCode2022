@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 const lines = fs
-  .readFileSync('/Users/jorgemartin/repo/adventOfCode22/src/day11/test.txt', 'utf8')
+  .readFileSync('/Users/jorgemartin/repo/adventOfCode22/src/day11/puzzle.txt', 'utf8')
   .split('\n')
 
 const monkeisInLines: string[][] = []
@@ -57,9 +57,10 @@ class Monkey {
     return item
   }
 
-  updateWorryLevel() {
+  updateWorryLevel(divider: number) {
     this.itemsWorryLevel.forEach((itemLevel, i) => {
       this.itemsWorryLevel[i] = this.operation(itemLevel)
+      this.itemsWorryLevel[i] %= divider
     })
   }
 
@@ -79,10 +80,12 @@ function main() {
 
   console.log('pre', monkeys)
 
-  for (let i = 0; i < 20; i++) {
+  const divider = monkeys.map((m) => m.testBy).reduce((a, b) => a * b, 1)
+  for (let i = 0; i < 10000; i++) {
     monkeys.forEach((monkey) => {
-      monkey.updateWorryLevel()
+      monkey.updateWorryLevel(divider)
       monkey.itemsWorryLevel.map((item, i) => {
+        // console.log(monkey.itemsWorryLevel)
         monkey.totalInspectedItems++
         const monkeyToTrow = monkeys.filter(({ id }) => id === monkey.test(item))[0]
         monkey.throw(monkeyToTrow, item)
@@ -94,10 +97,10 @@ function main() {
   // console.log('pos', monkeys)
 
   // Part 2
-  monkeys.forEach((monkey) => {
-    console.log('== After round 1 ==')
-    console.log(`Monkey ${monkey.id} inspected items ${monkey.totalInspectedItems} times`)
-  })
+  // monkeys.forEach((monkey) => {
+  //   console.log('== After round 1 ==')
+  //   console.log(`Monkey ${monkey.id} inspected items ${monkey.totalInspectedItems} times`)
+  // })
   monkeys.sort((a, b) => b.totalInspectedItems - a.totalInspectedItems)
   console.log('Total Numer', monkeys[0].totalInspectedItems * monkeys[1].totalInspectedItems)
 }

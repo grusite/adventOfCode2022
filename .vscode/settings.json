@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "workbench.colorCustomizations": {
+    "sash.hoverBorder": "#ffdf3d",
+    "statusBar.background": "#040a3a",
+    "statusBar.foreground": "#4d35c9",
+    "statusBarItem.hoverBackground": "#d6b200",
+    "statusBarItem.remoteBackground": "#4d35c9",
+    "statusBarItem.remoteForeground": "#15202b"
+  },
+  "peacock.color": "#4d35c9",
+  "peacock.affectActivityBar": false,
+  "peacock.affectTitleBar": false
+}
